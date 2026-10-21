@@ -64,8 +64,45 @@ def split_score(parent_labels, left_labels, right_labels):
 
     return float(parent_imp - weighted_child_imp)
 
-# Step 4 - best_split (not yet solved)
-# TODO: implement
+# Step 4 - best_split
+import numpy as np
+
+def best_split(features, labels, feature_indices):
+    # TODO: search feature_indices for the (feature, threshold) that best improves purity.
+    features = np.asarray(features)
+    labels = np.asarray(labels)
+    
+    best_score = 0.0
+    best_features = None
+    best_threshold = None
+
+    for f_idx in feature_indices:
+        col_values = features[:, f_idx]
+        unique_val = np.unique(col_values)
+
+        if len(unique_val) <=1:
+            continue
+
+        thresholds = (unique_val[:-1]+ unique_val[1:])/ 2.0
+
+        for t in thresholds:
+            _, left_y, _, right_y = split_dataset(features, labels, f_idx, t)
+
+            if len(left_y) == 0 or len(right_y) == 0:
+                continue
+
+            score =  split_score(labels, left_y, right_y)
+
+            if score > best_score:
+                best_score = score
+                best_features = f_idx
+                best_threshold = float(t)
+
+    return {
+        "feature_index" : best_features,
+        "threshold": best_threshold,
+        "score": float(best_score)
+    }
 
 # Step 5 - should_stop (not yet solved)
 # TODO: implement
