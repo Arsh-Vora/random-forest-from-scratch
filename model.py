@@ -293,6 +293,13 @@ def predict_forest(forest, features):
     
     return combine_predictions(tree_predictions)
 
-# Step 15 - accuracy (not yet solved)
-# TODO: implement
+# Step 15 - accuracy
+import numpy as np
+
+def accuracy(predictions, labels):
+    predictions = np.asarray(predictions)
+    labels = np.asarray(labels)
+    
+    # Compute the mean of the boolean match array
+    return float(np.mean(predictions == labels))
 
