@@ -262,8 +262,24 @@ def train_forest(
         
     return forest
 
-# Step 13 - combine_predictions (not yet solved)
-# TODO: implement
+# Step 13 - combine_predictions
+import numpy as np
+
+def combine_predictions(tree_predictions):
+    tree_predictions = np.asarray(tree_predictions)
+    
+    # tree_predictions shape: (num_trees, n)
+    n = tree_predictions.shape[1]
+    final_preds = []
+    
+    for j in range(n):
+        col_votes = tree_predictions[:, j]
+        # Re-use the majority voting logic (or call leaf_prediction directly)
+        values, counts = np.unique(col_votes, return_counts=True)
+        winner_class = values[np.argmax(counts)]
+        final_preds.append(winner_class)
+        
+    return np.array(final_preds, dtype=int)
 
 # Step 14 - predict_forest (not yet solved)
 # TODO: implement
