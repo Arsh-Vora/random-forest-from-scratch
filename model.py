@@ -174,8 +174,15 @@ def predict_example_tree(tree, example):
             
     return int(node["prediction"])
 
-# Step 9 - predict_tree (not yet solved)
-# TODO: implement
+# Step 9 - predict_tree
+import numpy as np
+
+def predict_tree(tree, features):
+    features = np.asarray(features)
+    
+    predictions = [predict_example_tree(tree, row) for row in features]
+    
+    return np.array(predictions, dtype=int)
 
 # Step 10 - bootstrap_sample (not yet solved)
 # TODO: implement
