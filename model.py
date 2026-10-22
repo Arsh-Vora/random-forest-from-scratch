@@ -128,8 +128,35 @@ def leaf_prediction(labels):
     winner_idx = np.argmax(counts)
     return int(values[winner_idx])
 
-# Step 7 - build_tree (not yet solved)
-# TODO: implement
+# Step 7 - build_tree
+import numpy as np
+
+def build_tree(features, labels, depth=0, max_depth=None, min_samples_split=2, feature_subset=None):
+    features, labels = np.asarray(features), np.asarray(labels)
+    
+    # 1. Base case: leaf
+    if should_stop(labels, depth, max_depth, min_samples_split):
+        return {"leaf": True, "prediction": leaf_prediction(labels)}
+    
+    # 2. Pick candidates & find best split
+    candidates = range(features.shape[1]) if feature_subset is None else feature_subset
+    best = best_split(features, labels, candidates)
+    
+    # Can't improve? Leaf.
+    if best["feature_index"] is None or best["score"] <= 0:
+        return {"leaf": True, "prediction": leaf_prediction(labels)}
+    
+    # 3. Split & Recurse
+    f_idx, thresh = best["feature_index"], best["threshold"]
+    l_X, l_y, r_X, r_y = split_dataset(features, labels, f_idx, thresh)
+    
+    return {
+        "leaf": False,
+        "feature_index": int(f_idx),
+        "threshold": float(thresh),
+        "left": build_tree(l_X, l_y, depth + 1, max_depth, min_samples_split, feature_subset),
+        "right": build_tree(r_X, r_y, depth + 1, max_depth, min_samples_split, feature_subset),
+    }
 
 # Step 8 - predict_example_tree (not yet solved)
 # TODO: implement
