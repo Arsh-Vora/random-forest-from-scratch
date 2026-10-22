@@ -206,8 +206,61 @@ import numpy as np
 def feature_subset(num_features, num_to_pick, rng):
     return rng.choice(num_features, size=num_to_pick, replace=False)
 
-# Step 12 - train_forest (not yet solved)
-# TODO: implement
+# Step 12 - train_forest
+import numpy as np
+
+def train_forest(
+    features,
+    labels,
+    num_trees,
+    num_features_per_split=None,
+    max_depth=None,
+    min_samples_split=2,
+    random_state=None,
+    rng=None
+):
+    features = np.asarray(features)
+    labels = np.asarray(labels)
+    
+    # Handle random_state or rng seamlessly
+    if rng is not None:
+        generator = rng
+    elif isinstance(random_state, np.random.Generator):
+        generator = random_state
+    else:
+        generator = np.random.default_rng(random_state)
+        
+    n_samples, d = features.shape
+    
+    # Default feature subset size: round(sqrt(d)) with a minimum of 1
+    if num_features_per_split is None:
+        num_to_pick = max(1, int(round(np.sqrt(d))))
+    else:
+        num_to_pick = num_features_per_split
+        
+    forest = []
+    for _ in range(num_trees):
+        # 1. Bootstrap sample of the training rows
+        boot_X, boot_y = bootstrap_sample(features, labels, generator)
+        
+        # 2. Pick a random subset of feature column indices
+        cols = feature_subset(d, num_to_pick, generator)
+        
+        # 3. Build a tree restricted to these features
+        tree = build_tree(
+            boot_X,
+            boot_y,
+            max_depth=max_depth,
+            min_samples_split=min_samples_split,
+            feature_subset=cols
+        )
+        
+        forest.append({
+            "tree": tree,
+            "feature_indices": cols
+        })
+        
+    return forest
 
 # Step 13 - combine_predictions (not yet solved)
 # TODO: implement
